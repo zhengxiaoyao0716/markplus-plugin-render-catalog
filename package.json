@@ -1,6 +1,6 @@
 {
   "name": "markplus-plugin-render-catalog",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Catelog(Tabel of Content) support for markplus.",
   "scripts": {
     "start": "markplus ReadMe.mp -o index.html -c dev.config.js && start index.html"

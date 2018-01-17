@@ -2,8 +2,7 @@ const head = `<style>
     .Markplus-catalog {
         position: relative;
         margin-right: 10px;
-        top: 0;
-        transition: margin-right 0.5s, top 0.5s;
+        transition: margin-right 0.5s;
     }
     .Markplus-catalog.fold {
         margin-right: 50px;
@@ -11,11 +10,13 @@ const head = `<style>
 
     .Markplus-catalog>a.fold {
         position: absolute;
+        top: 0;
+        z-index: 1;
         right: 10px;
-        top: 10px;
+        margin-top: 10px;
         cursor: pointer;
         color: #fff;
-        transition: color 0.5s 0.5s;
+        transition: top 0.5s, color 0.5s 0.5s;
     }
     .Markplus-catalog.fold>a.fold {
         color: unset;
@@ -26,9 +27,11 @@ const head = `<style>
     }
 
     .Markplus-catalog>.Tabel {
+        position: relative;
+        top: 0;
         background: #6cf;
         width: 30vw;
-        transition: width 0.5s;
+        transition: top 0.5s, width 0.5s;
         overflow: hidden;
         color: #fff;
     }
@@ -55,6 +58,21 @@ const head = `<style>
 const RenderCatalog = (self, fold) => ({
     head: () => head,
     code: () => `(container => {
+        container.classList.add('Markplus-catalog');
+        container.appendChild((span => (span.innerHTML = '<!-- markplus-plugin-render-catalog -->', span))(document.createElement('span')));
+
+        const foldButton = document.createElement('a');
+        container.appendChild((button => {
+            button.classList.add('fold');
+            button.addEventListener('click', () => container.classList[container.classList.contains('fold') ? 'remove' : 'add']('fold'));
+            ${fold ? 'container.classList.add(\'fold\');' : ''}
+            return button;
+        })(foldButton));
+
+        const tabArea = document.createElement('div');
+        tabArea.classList.add('Tabel');
+        container.appendChild(tabArea);
+
         window.addEventListener('load', () => ((parent) => {
             parent.style.display = 'flex';
             parent.insertBefore(container, Markplus.container);
@@ -66,22 +84,10 @@ const RenderCatalog = (self, fold) => ({
             const hash = decodeURIComponent(location.hash || firstTab && firstTab.getAttribute('to'));
             dynamicStyle.innerHTML = \`.Markplus-catalog>.Tabel span.tab[to="\${hash}"] { color: #fff; }\`;
             const hashTag = Markplus.container.querySelector(\`.Header\${hash}\`);
-            hashTag && (container.style.top = \`\${hashTag.offsetTop - hashTag.offsetParent.offsetTop}px\`);
+            const styleTop = () => Math.min(hashTag.offsetTop - hashTag.offsetParent.offsetTop, container.clientHeight - tabArea.clientHeight);
+            hashTag && (tabArea.style.top = foldButton.style.top = \`\${styleTop()}px\`);
         }));
 
-        container.classList.add('Markplus-catalog');
-
-        container.appendChild((span => (span.innerHTML = '<!-- markplus-plugin-render-catalog -->', span))(document.createElement('span')));
-        container.appendChild((button => {
-            button.classList.add('fold');
-            button.addEventListener('click', () => container.classList[container.classList.contains('fold') ? 'remove' : 'add']('fold'));
-            ${fold ? 'container.classList.add(\'fold\');' : ''}
-            return button;
-        })(document.createElement('a')));
-
-        const tabArea = document.createElement('div');
-        tabArea.classList.add('Tabel');
-        container.appendChild(tabArea);
         Markplus.catalog = /** @param {HTMLElement} ele */ ele => {
             if (!ele) {
                 return container;
