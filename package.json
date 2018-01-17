@@ -1,0 +1,27 @@
+{
+  "name": "markplus-plugin-render-catalog",
+  "version": "0.2.9",
+  "description": "Catelog(Tabel of Content) support for markplus.",
+  "scripts": {
+    "start": "markplus ReadMe.mp -o index.html -c dev.config.js && start index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhengxiaoyao0716/markplus-plugin-render-catalog.git"
+  },
+  "keywords": [
+    "markplus",
+    "catalog",
+    "markdown"
+  ],
+  "author": "github.com/zhengxiaoyao0716",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhengxiaoyao0716/markplus-plugin-render-catalog/issues"
+  },
+  "homepage": "https://github.com/zhengxiaoyao0716/markplus-plugin-render-catalog#readme",
+  "devDependencies": {
+    "markplus": "^0.2.9",
+    "markplus-plugin-render-highlight": "^0.2.8"
+  }
+}
