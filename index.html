@@ -2,7 +2,7 @@
 <style>
 .Markplus {
     font-family: arial,tahoma,'Microsoft Yahei','\5b8b\4f53',sans-serif;
-    margin: 45px;
+    padding: 45px;
     line-height: 1.5;
 }
 .Markplus .Target {
@@ -15,10 +15,12 @@
 }
 .Markplus .Header>.hash {
     position: relative;
+    padding: 0 12px;
+    margin-left: -24px;
 }
 .Markplus .Header:hover>.hash::before {
     position: absolute;
-    right: 6px;
+    left: 0;
     color: #888;
     content: "\00B6";
     cursor: pointer;
@@ -99,7 +101,7 @@
         margin-top: 10px;
         cursor: pointer;
         color: #fff;
-        transition: top 0.5s, color 0.5s 0.5s;
+        transition: top 0.5s, color 0.5s;
     }
     .Markplus-catalog.fold>a.fold {
         color: unset;
@@ -140,7 +142,31 @@
     .Markplus-catalog>.Tabel span.tab-4 { margin-left: 32px; }
     .Markplus-catalog>.Tabel span.tab-5 { margin-left: 42px; }
 </style><style id="markplusCatalogDynamicStyle"></style>
-<style>/* https://highlightjs.org/static/demo/styles/vs2015.css */.Markplus .Code.hljs{display:block;overflow-x:auto;background:#1E1E1E;color:#DCDCDC}.hljs-keyword,.hljs-literal,.hljs-symbol,.hljs-name{color:#569CD6}.hljs-link{color:#569CD6;text-decoration:underline}.hljs-built_in,.hljs-type{color:#4EC9B0}.hljs-number,.hljs-class{color:#B8D7A3}.hljs-string,.hljs-meta-string{color:#D69D85}.hljs-regexp,.hljs-template-tag{color:#9A5334}.hljs-subst,.hljs-function,.hljs-title,.hljs-params,.hljs-formula{color:#DCDCDC}.hljs-comment,.hljs-quote{color:#57A64A;font-style:italic}.hljs-doctag{color:#608B4E}.hljs-meta,.hljs-meta-keyword,.hljs-tag{color:#9B9B9B}.hljs-variable,.hljs-template-variable{color:#BD63C5}.hljs-attr,.hljs-attribute,.hljs-builtin-name{color:#9CDCFE}.hljs-section{color:gold}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-bullet,.hljs-selector-tag,.hljs-selector-id,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo{color:#D7BA7D}.hljs-addition{background-color:#144212;display:inline-block;width:100%}.hljs-deletion{background-color:#600;display:inline-block;width:100%}</style>
+<style>
+    .Markplus {
+        overflow: hidden;
+        flex-grow: 1;
+    }
+    .Markplus .Code {
+        padding: 0;
+    }
+    .Markplus .Code #full {
+        position:absolute;
+        padding:6px;
+        cursor: pointer;
+    }
+    .Markplus .Code .hljs {
+        display:block;
+        overflow-x:auto;
+        padding:16px;
+    }
+    .Markplus .Code-full {
+        position: absolute;
+    }
+    .Markplus.hide {
+        display: none;
+    }
+.Markplus .Code{background:#1E1E1E;}.Markplus .Code #full{color:#eee;}/* https://highlightjs.org/static/demo/styles/vs2015.css */.hljs{background:#1E1E1E;color:#DCDCDC}.hljs-keyword,.hljs-literal,.hljs-symbol,.hljs-name{color:#569CD6}.hljs-link{color:#569CD6;text-decoration:underline}.hljs-built_in,.hljs-type{color:#4EC9B0}.hljs-number,.hljs-class{color:#B8D7A3}.hljs-string,.hljs-meta-string{color:#D69D85}.hljs-regexp,.hljs-template-tag{color:#9A5334}.hljs-subst,.hljs-function,.hljs-title,.hljs-params,.hljs-formula{color:#DCDCDC}.hljs-comment,.hljs-quote{color:#57A64A;font-style:italic}.hljs-doctag{color:#608B4E}.hljs-meta,.hljs-meta-keyword,.hljs-tag{color:#9B9B9B}.hljs-variable,.hljs-template-variable{color:#BD63C5}.hljs-attr,.hljs-attribute,.hljs-builtin-name{color:#9CDCFE}.hljs-section{color:gold}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-bullet,.hljs-selector-tag,.hljs-selector-id,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo{color:#D7BA7D}.hljs-addition{background-color:#144212;display:inline-block;width:100%}.hljs-deletion{background-color:#600;display:inline-block;width:100%}</style>
 <style>body { margin: 0; width: 100%; height: 100%; }</style>
 <script>
 (function (global, factory) {
@@ -287,9 +313,9 @@
         return container.appendChild(Markplus.container);
     };
 
-    Markplus.__defineGetter__('version', function () {
-        return '0.2.9';
-    });
+    Object.defineProperty(Markplus, 'version', { get: function get() {
+            return '0.2.11';
+        } });
 
     Markplus.renders.unshift([function (payload) {
         return payload instanceof Promise;
@@ -302,12 +328,9 @@
         return ele;
     }]);
     Markplus.decorators.push(function (ele, _, payload) {
-        return ele.classList.contains('Header') && ele.addEventListener('click', function () {
+        return ele.classList.contains('Header') && (ele.innerHTML = '<span class="hash"></span>' + ele.innerHTML, ele.querySelector('.hash').addEventListener('click', function () {
             return location.hash = payload.id;
-        });
-    });
-    Markplus.decorators.push(function (ele) {
-        return ele.classList.contains('Header') && (ele.innerHTML = '<span class="hash"></span>' + ele.innerHTML);
+        }));
     });
     (function (container) {
         container.classList.add('Markplus-catalog');
@@ -350,7 +373,7 @@
             });
         });
 
-        Markplus.catalog = /** @param {HTMLElement} ele */function (ele) {
+        var catalog = /** @param {HTMLElement} ele */function catalog(ele) {
             if (!ele) {
                 return container;
             }
@@ -365,11 +388,44 @@
             tabArea.appendChild(tab);
         };
         Markplus.decorators.push(function (ele) {
-            return ele.classList.contains('Header') && Markplus.catalog(ele);
+            return ele.classList.contains('Header') && catalog(ele);
         });
 
         return container;
     })(document.createElement('div'));
+
+    (function () {
+        var container = document.createElement('div');
+        container.classList.add('Markplus');
+
+        var highlight = function highlight(ele) {
+            return ele.querySelector('#full').addEventListener('click', function () {
+                var full = document.createElement('pre');
+                container.appendChild(full);
+                full.className = ele.className;
+                full.innerHTML = ele.innerHTML;
+                Array.from(full.querySelectorAll('.hljs')).forEach(function (hljs) {
+                    return hljs.setAttribute('contenteditable', true);
+                });
+                full.querySelector('#full').addEventListener('click', function () {
+                    Markplus.container.classList.remove('hide');
+                    container.remove();
+                    ele.innerHTML = full.innerHTML;
+                    Array.from(ele.querySelectorAll('.hljs')).forEach(function (hljs) {
+                        return hljs.removeAttribute('contenteditable');
+                    });
+                    highlight(ele);
+                    container.innerHTML = '';
+                });
+
+                Markplus.container.classList.add('hide');
+                Markplus.container.parentElement.insertBefore(container, Markplus.container);
+            });
+        };
+        Markplus.decorators.push(function (ele, _, payload) {
+            return ele.classList.contains('Code') && highlight(ele);
+        });
+    })();
 
     /* dump */
 
@@ -380,15 +436,15 @@
     Markplus.register(3, { "tag": "span", "html": "<br>", "class": "Plain" });
     Markplus.register(4, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
     Markplus.register(5, { "tag": "span", "html": "<span>Setup</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "setup" });
-    Markplus.register(6, { "tag": "pre", "html": "npm i --<span class=\"hljs-built_in\">save</span>-<span class=\"hljs-built_in\">dev</span> markplus markplus-plugin-render-catalog", "class": "Code Code-bash hljs language-q" });
+    Markplus.register(6, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs q\">npm i --<span class=\"hljs-built_in\">save</span>-<span class=\"hljs-built_in\">dev</span> markplus markplus-plugin-render-catalog</span>", "class": "Code Code-bash" });
     Markplus.register(9, { "tag": "span", "html": "<br>", "class": "Plain" });
     Markplus.register(10, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
     Markplus.register(11, { "tag": "span", "html": "<span>Usage</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "usage" });
     Markplus.register(12, { "tag": "span", "html": "<span>Simple:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "simple" });
-    Markplus.register(13, { "tag": "pre", "html": "{ <span class=\"hljs-attr\">\"plugin\"</span>: [ <span class=\"hljs-string\">\"render-catalog\"</span> ] }", "class": "Code Code-json hljs language-json" });
+    Markplus.register(13, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{ <span class=\"hljs-attr\">\"plugin\"</span>: [ <span class=\"hljs-string\">\"render-catalog\"</span> ] }</span>", "class": "Code Code-json" });
     Markplus.register(16, { "tag": "span", "html": "<br>", "class": "Plain" });
     Markplus.register(17, { "tag": "span", "html": "<span>Default folded catalog:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "defaultFoldedCatalog" });
-    Markplus.register(18, { "tag": "pre", "html": "{\n    <span class=\"hljs-attr\">\"plugin\"</span>: [\n        [<span class=\"hljs-string\">\"render-catalog\"</span>, <span class=\"hljs-literal\">true</span>]\n    ]\n}", "class": "Code Code-json hljs language-json" });
+    Markplus.register(18, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{\n    <span class=\"hljs-attr\">\"plugin\"</span>: [\n        [<span class=\"hljs-string\">\"render-catalog\"</span>, <span class=\"hljs-literal\">true</span>]\n    ]\n}</span>", "class": "Code Code-json" });
     Markplus.register(25, { "tag": "span", "html": "<br>", "class": "Plain" });
 });
 </script>

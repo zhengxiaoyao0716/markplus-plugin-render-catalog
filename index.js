@@ -16,7 +16,7 @@ const head = `<style>
         margin-top: 10px;
         cursor: pointer;
         color: #fff;
-        transition: top 0.5s, color 0.5s 0.5s;
+        transition: top 0.5s, color 0.5s;
     }
     .Markplus-catalog.fold>a.fold {
         color: unset;
@@ -88,7 +88,7 @@ const RenderCatalog = (self, fold) => ({
             hashTag && (tabArea.style.top = foldButton.style.top = \`\${styleTop()}px\`);
         }));
 
-        Markplus.catalog = /** @param {HTMLElement} ele */ ele => {
+        const catalog = /** @param {HTMLElement} ele */ ele => {
             if (!ele) {
                 return container;
             }
@@ -100,7 +100,7 @@ const RenderCatalog = (self, fold) => ({
             tab.addEventListener('click', () => location.hash = ele.id)
             tabArea.appendChild(tab);
         };
-        Markplus.decorators.push(ele => ele.classList.contains('Header') && Markplus.catalog(ele));
+        Markplus.decorators.push(ele => ele.classList.contains('Header') && catalog(ele));
 
         return container;
     })(document.createElement('div'));
