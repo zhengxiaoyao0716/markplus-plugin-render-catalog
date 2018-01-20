@@ -1,7 +1,6 @@
 const head = `<style>
     .Markplus-catalog {
         position: relative;
-        transition: margin-right 0.5s;
     }
 
     .Markplus-catalog>a.fold {
@@ -27,7 +26,7 @@ const head = `<style>
         top: 0;
         background: #6cf;
         width: 30vw;
-        transition: top 0.5s, width 0.5s;
+        transition: top 0.5s, width 0.5s, max-height 0.5s;
         overflow: hidden;
         color: #fff;
     }
@@ -74,24 +73,29 @@ const head = `<style>
         text-align: center;
         cursor: pointer;
         background: linear-gradient(0, #6cf, rgba(0, 0, 0, 0));
-        color: #9ff;
+        color: #fff;
     }
     .Markplus-catalog.fold>span.top {
         width: 0vw;
+        color: unset;
     }
-    .Markplus-catalog>span.top:hover {
-        color: #fff;
-    }
-    .Markplus-catalog.fold>span.top:hover {
-        color: #6cf;
-    }
-</style><style id="markplusCatalogDynamicStyle"></style>`;
+</style><style id="markplusCatalogDynamicStyleTab"></style><style id="markplusCatalogDynamicStyleVertical"></style>`;
 
-const RenderCatalog = (self, fold) => ({
+const headVertical = `
+    .Markplus-catalog>.Tabel, .Markplus-catalog>span.top { width: 100%; }
+    .Markplus-catalog>.Tabel { max-height: 1000vh; }
+    .Markplus-catalog.fold>.Tabel { width: 100%; max-height: 0vh; }
+`;
+
+const RenderCatalog = (self, fold, ) => ({
     head: () => head,
     code: () => `(container => {
         window.addEventListener('load', () => ((parent) => {
-            parent.style.display = 'flex';
+            if (window.innerWidth / window.innerHeight > 1) {
+                parent.style.display = 'flex';
+            } else {
+                document.querySelector('#markplusCatalogDynamicStyleVertical').innerHTML = \`${headVertical}\`;
+            }
             parent.insertBefore(container, Markplus.container);
         })(Markplus.container.parentElement));
 
@@ -128,11 +132,10 @@ const RenderCatalog = (self, fold) => ({
         })(backTop));
 
         const hashAvailable = () => location.hash && location.hash != '#top';
-        const dynamicStyle = document.querySelector('#markplusCatalogDynamicStyle');
+        const dynamicStyle = document.querySelector('#markplusCatalogDynamicStyleTab');
         ['load', 'hashchange'].forEach(event => window.addEventListener(event, () => {
             const firstTab = container.querySelector('.Tabel span.tab');
             const hash = decodeURIComponent(hashAvailable() ? location.hash : firstTab && firstTab.getAttribute('to'));
-            console.log(hash);
             dynamicStyle.innerHTML = \`.Markplus-catalog>.Tabel span.tab[to="\${hash}"] { color: #fff; }\`;
             hashAvailable() && scrollTo(Markplus.container.querySelector(\`.Header\${hash}\`) || Markplus.container.querySelector(hash) || document.querySelector(hash));
         }));
