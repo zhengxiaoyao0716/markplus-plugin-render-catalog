@@ -1,5 +1,5 @@
 # markplus-plugin-render-catalog
-## Catelog(Tabel of Content) support for [markplus](https://github.com/zhengxiaoyao0716/markplus).
+## Catelog(Tabs of Content) support for [markplus](https://github.com/zhengxiaoyao0716/markplus).
 
 ***
 ## Setup
