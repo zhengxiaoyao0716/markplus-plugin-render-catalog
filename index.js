@@ -10,11 +10,12 @@ const head = `<style>
         right: 10px;
         margin-top: 10px;
         cursor: pointer;
-        color: #fff;
         transition: top 0.5s, color 0.5s;
     }
+    .Markplus-catalog:not(.fold)>a.fold {
+        color: #fff;
+    }
     .Markplus-catalog.fold>a.fold {
-        color: unset;
         left: 10px;
     }
     .Markplus-catalog>a.fold::before {
@@ -63,7 +64,7 @@ const head = `<style>
     }
     .Markplus-catalog>.Tabel span.tab-2 { border-top: 1px solid; border-bottom: 1px dashed; margin-top: 20px; }
     ${new Array(4).fill().map((_, index) => `.Markplus-catalog>.Tabel span.tab-${2 + index} { margin-left: ${12 + 15 * index}px; }`).join('\n    ')}
-    
+
     .Markplus-catalog>span.top {
         position: fixed;
         bottom: 0;
@@ -72,20 +73,16 @@ const head = `<style>
         display: block;
         text-align: center;
         cursor: pointer;
-        background: linear-gradient(0, #6cf, rgba(0, 0, 0, 0));
+        background: #6cf;
+        background: linear-gradient(0, #6cf, rgba(255, 255, 255, 0));
+    }
+    .Markplus-catalog:not(.fold)>span.top {
         color: #fff;
     }
     .Markplus-catalog.fold>span.top {
         width: 0vw;
-        color: unset;
     }
 </style><style id="markplusCatalogDynamicStyleTab"></style><style id="markplusCatalogDynamicStyleVertical"></style>`;
-
-const headVertical = `
-    .Markplus-catalog>.Tabel, .Markplus-catalog>span.top { width: 100%; }
-    .Markplus-catalog>.Tabel { max-height: 1000vh; }
-    .Markplus-catalog.fold>.Tabel { width: 100%; max-height: 0vh; }
-`;
 
 const RenderCatalog = (self, fold, ) => ({
     head: () => head,
@@ -94,7 +91,11 @@ const RenderCatalog = (self, fold, ) => ({
             if (window.innerWidth / window.innerHeight > 1) {
                 parent.style.display = 'flex';
             } else {
-                document.querySelector('#markplusCatalogDynamicStyleVertical').innerHTML = \`${headVertical}\`;
+                document.querySelector('#markplusCatalogDynamicStyleVertical').innerHTML = \`
+                    .Markplus-catalog>.Tabel, .Markplus-catalog>span.top { width: 100%; }
+                    .Markplus-catalog>.Tabel { max-height: 1000vh; }
+                    .Markplus-catalog.fold>.Tabel { width: 100%; max-height: 0vh; }
+                \`;
             }
             parent.insertBefore(container, Markplus.container);
         })(Markplus.container.parentElement));
@@ -131,7 +132,7 @@ const RenderCatalog = (self, fold, ) => ({
             return button;
         })(backTop));
 
-        const hashAvailable = () => location.hash && location.hash != '#top';
+        const hashAvailable = () => location.hash.slice(1) && location.hash != '#top';
         const dynamicStyle = document.querySelector('#markplusCatalogDynamicStyleTab');
         ['load', 'hashchange'].forEach(event => window.addEventListener(event, () => {
             const firstTab = container.querySelector('.Tabel span.tab');
@@ -157,7 +158,6 @@ const RenderCatalog = (self, fold, ) => ({
         Markplus.decorators.push(ele => ele.classList.contains('Header') && catalog(ele));
 
         return container;
-    })(document.createElement('div'));
-`,
+    })(document.createElement('div'));`.replace(/\n {4}/g, '\n'),
 });
 exports.default = RenderCatalog;
