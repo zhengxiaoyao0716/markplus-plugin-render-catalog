@@ -19,6 +19,8 @@
     .Markplus .Header {
         font-weight: bold;
         padding-bottom: 6px;
+        margin-top: 24px;
+        margin-bottom: 16px;
     }
     .Markplus .Header>.hash {
         position: relative;
@@ -33,7 +35,7 @@
         content: "\00B6";
     }
     .Markplus .Header.Header-1 {
-        border-bottom: 0.1em solid #eee;
+        border-bottom: 1px solid #eee;
         font-size: 2em;
     }
     .Markplus .Header.Header-2 {
@@ -51,10 +53,13 @@
     }
 
     .Markplus .Divider {
-        border-top: 0.25em solid #eee;
+        border-top: 1px solid #eee;
     }
     .Markplus .Divider.Divider-dashed {
         border-top-style: dashed;
+    }
+    .Markplus .Divider.Divider-bold {
+        border-top-width: 0.25em;
     }
     .Markplus .Block, .Markplus .Block>Block {
         display: block;
@@ -70,7 +75,8 @@
         margin: 0;
         margin-bottom: 16px;
         padding: 16px;
-        background: #eee;
+        background: #f6f8fa;
+        border-radius: 3px;
     }
 
     .Markplus a {
@@ -87,6 +93,33 @@
         background-color: rgba(27,31,35,0.05);
         border-radius: 3px;
         font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    .Markplus .Table table {
+        border-collapse: collapse;
+    }
+    .Markplus .Table table tr {
+        border-top: 1px solid #ccc;
+    }
+    .Markplus .Table table tr>th,
+    .Markplus .Table table tr>td {
+        padding: 6px 13px;
+        border: 1px solid #ccc;
+    }
+    .Markplus .Table table tr:nth-child(2n) {
+        background-color: #f6f8fa;
+    }
+    .Markplus .Table table tr>th:nth-child(2n):not(:last-child),
+    .Markplus .Table table tr>td:nth-child(2n):not(:last-child) {
+        border-left-style: dotted;
+    }
+    .Markplus .Table table tr>th:nth-child(2n+1):not(:last-child),
+    .Markplus .Table table tr>td:nth-child(2n+1):not(:last-child) {
+        border-right-style: dotted;
+    }
+    .Markplus .Table table tfoot>tr>td {
+        font-size: 0.8em;
+        padding: 3px 6px;
     }
 </style>
 
@@ -230,6 +263,18 @@
             value: true
         });
 
+        function _toConsumableArray(arr) {
+            if (Array.isArray(arr)) {
+                for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+                    arr2[i] = arr[i];
+                }
+
+                return arr2;
+            } else {
+                return Array.from(arr);
+            }
+        }
+
         var _slicedToArray = function () {
             function sliceIterator(arr, i) {
                 var _arr = [];
@@ -280,10 +325,18 @@
             return target;
         }
 
+        var withEscape = exports.withEscape = function withEscape(action, only) {
+            return (/** @param {string} text */function (text) {
+                    return action(text.replace(/\\(.)/g, function (_, char) {
+                        return only && only.indexOf(char) == -1 ? '\\' + char : '\\u00' + char.charCodeAt(0).toString(16);
+                    }))(/\\u([0-9A-Za-z]{4})/g, function (_, code) {
+                        return '' + String.fromCodePoint(Number.parseInt(code, 16));
+                    });
+                }
+            );
+        };
+
         var Markplus = {
-            get version() {
-                return '';
-            },
             container: function (container) {
                 return container.classList.add('Markplus'), container;
             }(document.createElement('div')),
@@ -315,7 +368,7 @@
                 var ele = document.createElement(tag);
                 ele.innerHTML = html;
                 Object.keys(props).forEach(function (name) {
-                    return ele.setAttribute(name, props[name]);
+                    return typeof props[name] == 'string' && ele.setAttribute(name, props[name]);
                 });
                 ele.classList.add('Target');
                 return ele;
@@ -324,21 +377,30 @@
             }, function () {
                 return document.createElement('span');
             }]],
-            htmlSugars: [[/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>'], [/`(.*?)`/g, '<code>$1</code>']],
-            replaceHtml: function replaceHtml(ele, html) {
-                var escape = html.replace(/\\(.)/g, function (_, char) {
-                    return '\\u00' + char.charCodeAt(0).toString(16);
-                });
-                var replaced = this.htmlSugars.reduce(function (html, _ref) {
-                    var _ref2 = _slicedToArray(_ref, 2),
-                        regExp = _ref2[0],
-                        replace = _ref2[1];
+            htmlSugars: [[/\[(.*?)\]\((.*?)\)/g, function () {
+                for (var _len = arguments.length, $ = Array(_len), _key = 0; _key < _len; _key++) {
+                    $[_key] = arguments[_key];
+                }
 
-                    return html.replace(regExp, replace);
-                }, escape);
-                ele.innerHTML = replaced.replace(/\\u([0-9A-Za-z]{4})/g, function (_, code) {
-                    return '' + String.fromCodePoint(Number.parseInt(code, 16));
-                });
+                return '<a href="' + function (matched) {
+                    return matched ? 'javascript:' + matched[1] + '(' + matched[2] + ');' : $[2];
+                }($[2].match(/^\$(\w+)(.*)/)) + '">' + $[1] + '</a>';
+            }], [/`(.*?)`/g, '<code>$1</code>']],
+            replaceHtml: function replaceHtml(ele, html) {
+                var _this = this;
+
+                ele.innerHTML = withEscape( // eslint-disable-line no-undef
+                function (html) {
+                    return function (reg, rep) {
+                        return _this.htmlSugars.reduce(function (html, _ref) {
+                            var _ref2 = _slicedToArray(_ref, 2),
+                                regExp = _ref2[0],
+                                replace = _ref2[1];
+
+                            return html.replace(regExp, replace);
+                        }, html).replace(reg, rep);
+                    };
+                })(html);
             },
 
             decorators: [function (ele, at) {
@@ -366,7 +428,7 @@
             return container.appendChild(Markplus.container);
         };
 
-        var version = exports.version = '0.2.15';
+        var version = exports.version = '0.3.0';
 
         Markplus.renders.unshift([function (payload) {
             return payload instanceof Promise;
@@ -378,6 +440,69 @@
             });
             return ele;
         }]);
+
+        (function () {
+            var render = function render(ele, _ref5) {
+                var id = _ref5.id,
+                    names = _ref5.names,
+                    macro = _ref5.macro,
+                    parser = _ref5.parser,
+                    table = _ref5.table;
+
+                if (!macro.length) {
+                    return;
+                }
+                var values = names.map(function (_name, index) {
+                    var arg = [];
+                    Array.prototype.map.call(ele.querySelectorAll('table>tbody>tr>:nth-child(' + (1 + index) + ')'), function (grid) {
+                        return grid.hasAttribute('data-markplus-table-ref') ? ele.querySelector('table>tbody>tr' + grid.getAttribute('data-markplus-table-ref')) : grid;
+                    }).map(function (grid) {
+                        return parser[index] ? function () {
+                            return parser[index](grid.innerText);
+                        } : function () {
+                            return grid.innerText;
+                        };
+                    }).forEach(function (getter, index) {
+                        return Object.defineProperty(arg, index, { get: getter });
+                    });
+                    return arg;
+                });
+                var calc = function calc(_ref6) {
+                    var _ref7 = _slicedToArray(_ref6, 2),
+                        name = _ref7[0],
+                        macro = _ref7[1];
+
+                    var html = void 0;
+                    try {
+                        html = macro.apply(undefined, _toConsumableArray(values));
+                    } catch (e) {
+                        return e;
+                    }
+                    ele.querySelector('table>tbody>tr>th[data-markplus-table-macro="' + name + '"').innerHTML = html;
+                };
+                var calcAll = function calcAll(macro) {
+                    var retries = macro.filter(calc);
+                    if (retries.length == macro.length) {
+                        throw new Error('could not calculate the macro of table(' + id + ') : ' + JSON.stringify(retries));
+                    }
+                    if (retries.length) {
+                        calcAll(retries);
+                        return;
+                    }
+                    values.map(function (row) {
+                        return row.map(function (grid) {
+                            return grid;
+                        });
+                    }).forEach(function (row, index) {
+                        return table[names[index]] = row;
+                    });
+                };
+                calcAll(macro);
+            };
+            Markplus.decorators.push(function (ele, _, payload) {
+                return ele.classList.contains('Table') && render(ele, payload);
+            });
+        })();
 
         Markplus.decorators.push(function (ele, _, payload) {
             return ele.classList.contains('Header') && (ele.innerHTML = '<span class="hash"></span>' + ele.innerHTML, ele.querySelector('.hash').addEventListener('click', function () {
