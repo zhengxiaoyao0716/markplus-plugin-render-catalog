@@ -382,7 +382,7 @@
                 return document.createElement('span');
             }]],
             /** replace the sugars to it's raw syntax */
-            htmlSugars: [[/\[(.*?)\]\((.*?)\)/g, function () {
+            htmlSugars: [[/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1"></img>'], [/\[(.*?)\]\((.*?)\)/g, function () {
                 for (var _len = arguments.length, $ = Array(_len), _key = 0; _key < _len; _key++) {
                     $[_key] = arguments[_key];
                 }
@@ -413,6 +413,10 @@
                 return ele.setAttribute('data-markplus-at', at);
             }, function (ele, at) {
                 return ele.id || (ele.id = 'L' + at);
+            }, function (ele, at, payload) {
+                return payload && payload.nested && payload.nested.forEach(function (payload, index) {
+                    return Markplus.register(ele.querySelector('*[data-markplus-nested="' + index + '"]'), index, payload);
+                });
             }],
             register: function register(container, at, payload) {
                 var ele = this.renders.find(function (_ref3) {
@@ -421,11 +425,11 @@
 
                     return cond(payload);
                 })[1](payload);
+                container.appendChild(ele);
                 this.replaceHtml(ele, ele.innerHTML);
                 this.decorators.forEach(function (decorator) {
                     return decorator(ele, at, payload);
                 });
-                container.appendChild(ele);
             },
 
             /** processes to initialize the container  */
@@ -449,7 +453,7 @@
             Object.defineProperty(Markplus, 'container', containerProperty);
         };
 
-        var version = exports.version = '0.3.6';
+        var version = exports.version = '0.3.7';
 
         Markplus.renders.unshift([function (payload) {
             return payload instanceof Promise;
@@ -563,8 +567,12 @@
                 container.appendChild(tabArea);
 
                 var scrollTo = function scrollTo(target) {
+                    var offsetTop = function offsetTop(target) {
+                        var pt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+                        return target.offsetParent ? offsetTop(target.offsetParent, pt + target.offsetTop) : pt + target.offsetTop;
+                    };
                     var styleTop = function styleTop() {
-                        return Math.min(target.offsetTop - container.offsetTop, container.clientHeight - tabArea.clientHeight);
+                        return Math.min(offsetTop(target) - offsetTop(container), container.clientHeight - tabArea.clientHeight);
                     };
                     target && [tabArea, foldButton].forEach(function (dom) {
                         return dom.style.top = styleTop() + 'px';
@@ -602,11 +610,17 @@
 
                 var catalog = /** @param {HTMLElement} ele */function catalog(ele) {
                     if (!ele) {
-                        return container;
+                        return;
                     }
-                    ele.addEventListener('click', function () {
-                        return scrollTo(ele);
+                    Array.prototype.forEach.call(ele.querySelectorAll(':not(.hash)'), function (child) {
+                        return child.addEventListener('click', function () {
+                            return scrollTo(ele);
+                        });
                     });
+
+                    if (!ele.parentElement == mpContainer) {
+                        return;
+                    }
 
                     var tab = document.createElement('span');
                     tab.innerText = ele.innerText;
@@ -619,10 +633,8 @@
                     tabArea.appendChild(tab);
                 };
                 Markplus.decorators.push(function (ele) {
-                    return ele.classList.contains('Header') && Markplus.container == mpContainer && catalog(ele);
+                    return ele.classList.contains('Header') && catalog(ele);
                 });
-
-                return container;
             });
         })({ scrollToTop: [] });
 

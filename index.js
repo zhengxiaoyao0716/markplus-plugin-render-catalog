@@ -118,7 +118,8 @@ const RenderCatalog = (self, fold, ) => ({
         container.appendChild(tabArea);
 
         const scrollTo = target => {
-            const styleTop = () => Math.min(target.offsetTop - container.offsetTop, container.clientHeight - tabArea.clientHeight);
+            const offsetTop = (target, pt = 0) => target.offsetParent ? offsetTop(target.offsetParent, pt + target.offsetTop) : pt + target.offsetTop;
+            const styleTop = () => Math.min(offsetTop(target) - offsetTop(container), container.clientHeight - tabArea.clientHeight);
             target && [tabArea, foldButton].forEach(dom => dom.style.top = \`\${styleTop()}px\`);
         }
         cache.scrollToTop.push(() => scrollTo(mpContainer));
@@ -145,9 +146,13 @@ const RenderCatalog = (self, fold, ) => ({
 
         const catalog = /** @param {HTMLElement} ele */ ele => {
             if (!ele) {
-                return container;
+                return;
             }
-            ele.addEventListener('click', () => scrollTo(ele));
+            Array.prototype.forEach.call(ele.querySelectorAll(':not(.hash)'), child => child.addEventListener('click', () => scrollTo(ele)));
+
+            if (!ele.parentElement == mpContainer ) {
+                return;
+            }
 
             const tab = document.createElement('span');
             tab.innerText = ele.innerText;
@@ -157,9 +162,7 @@ const RenderCatalog = (self, fold, ) => ({
             tab.addEventListener('click', () => location.hash = ele.id);
             tabArea.appendChild(tab);
         };
-        Markplus.decorators.push(ele => ele.classList.contains('Header') && Markplus.container == mpContainer && catalog(ele));
-
-        return container;
+        Markplus.decorators.push(ele => ele.classList.contains('Header') && catalog(ele));
     }))({ scrollToTop: [] });`.replace(/\n {4}/g, '\n'),
 });
 exports.default = RenderCatalog;
