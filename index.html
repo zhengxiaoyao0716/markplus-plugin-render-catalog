@@ -449,7 +449,7 @@
             Object.defineProperty(Markplus, 'container', containerProperty);
         };
 
-        var version = exports.version = '0.3.5';
+        var version = exports.version = '0.3.6';
 
         Markplus.renders.unshift([function (payload) {
             return payload instanceof Promise;
@@ -687,13 +687,38 @@
             value: true
         });
 
-        var _Markplus2 = _interopRequireDefault(_Markplus);
+        var Markplus = _interopRequireWildcard(_Markplus);
 
-        function _interopRequireDefault(obj) {
-            return obj && obj.__esModule ? obj : {
-                default: obj
-            };
+        function _interopRequireWildcard(obj) {
+            if (obj && obj.__esModule) {
+                return obj;
+            } else {
+                var newObj = {};
+
+                if (obj != null) {
+                    for (var key in obj) {
+                        if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+                    }
+                }
+
+                newObj.default = obj;
+                return newObj;
+            }
         }
+
+        var _extends = Object.assign || function (target) {
+            for (var i = 1; i < arguments.length; i++) {
+                var source = arguments[i];
+
+                for (var key in source) {
+                    if (Object.prototype.hasOwnProperty.call(source, key)) {
+                        target[key] = source[key];
+                    }
+                }
+            }
+
+            return target;
+        };
 
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) {
@@ -701,28 +726,74 @@
             }
         }
 
-        var MarkplusPluginRenderCatalog = function MarkplusPluginRenderCatalog(container) {
-            _classCallCheck(this, MarkplusPluginRenderCatalog);
+        var _createClass = function () {
+            function defineProperties(target, props) {
+                for (var i = 0; i < props.length; i++) {
+                    var descriptor = props[i];
+                    descriptor.enumerable = descriptor.enumerable || false;
+                    descriptor.configurable = true;
+                    if ("value" in descriptor) descriptor.writable = true;
+                    Object.defineProperty(target, descriptor.key, descriptor);
+                }
+            }
 
-            (0, _Markplus2.default)(container, function (Markplus) {
-                Markplus.register(0, { "tag": "span", "html": "<!-- https://github.com/zhengxiaoyao0716/markplus -->", "class": "Comments" });
-                Markplus.register(1, { "tag": "span", "html": "<span>markplus-plugin-render-catalog</span><br>", "class": "Header Header-1", "data-markplus-header-level": 1, "id": "markplusPluginRenderCatalog" });
-                Markplus.register(2, { "tag": "span", "html": "<span>Catelog(Tabs of Content) support for [markplus](https://github.com/zhengxiaoyao0716/markplus).</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "catelogTabsOfContentSupportForMarkplusHttpsGithubComZhengxiaoyao0716Markplus" });
-                Markplus.register(3, { "tag": "span", "html": "<br>", "class": "Plain" });
-                Markplus.register(4, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
-                Markplus.register(5, { "tag": "span", "html": "<span>Setup</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "setup" });
-                Markplus.register(6, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs q\">npm i --<span class=\"hljs-built_in\">save</span>-<span class=\"hljs-built_in\">dev</span> markplus markplus-plugin-render-catalog</span>", "class": "Code Code-bash" });
-                Markplus.register(9, { "tag": "span", "html": "<br>", "class": "Plain" });
-                Markplus.register(10, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
-                Markplus.register(11, { "tag": "span", "html": "<span>Usage</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "usage" });
-                Markplus.register(12, { "tag": "span", "html": "<span>Simple:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "simple" });
-                Markplus.register(13, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{ <span class=\"hljs-attr\">\"plugin\"</span>: [ <span class=\"hljs-string\">\"render-catalog\"</span> ] }</span>", "class": "Code Code-json" });
-                Markplus.register(16, { "tag": "span", "html": "<br>", "class": "Plain" });
-                Markplus.register(17, { "tag": "span", "html": "<span>Default folded catalog:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "defaultFoldedCatalog" });
-                Markplus.register(18, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{\n    <span class=\"hljs-attr\">\"plugin\"</span>: [\n        [<span class=\"hljs-string\">\"render-catalog\"</span>, <span class=\"hljs-literal\">true</span>]\n    ]\n}</span>", "class": "Code Code-json" });
-                Markplus.register(25, { "tag": "span", "html": "<br>", "class": "Plain" });
-            });
-        };
+            return function (Constructor, protoProps, staticProps) {
+                if (protoProps) defineProperties(Constructor.prototype, protoProps);
+                if (staticProps) defineProperties(Constructor, staticProps);
+                return Constructor;
+            };
+        }();
+
+        function _objectWithoutProperties(obj, keys) {
+            var target = {};
+
+            for (var i in obj) {
+                if (keys.indexOf(i) >= 0) continue;
+                if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+                target[i] = obj[i];
+            }
+
+            return target;
+        }
+
+        var render = Markplus.default,
+            extra = _objectWithoutProperties(Markplus, ["default"]);
+
+        var MarkplusPluginRenderCatalog = function () {
+            function MarkplusPluginRenderCatalog(container) {
+                var _this = this;
+
+                _classCallCheck(this, MarkplusPluginRenderCatalog);
+
+                render(container, function (ctx) {
+                    return _this.render(_extends({}, ctx, extra));
+                });
+            }
+
+            _createClass(MarkplusPluginRenderCatalog, [{
+                key: "render",
+                value: function render(Markplus) {
+                    Markplus.register(0, { "tag": "span", "html": "<!-- https://github.com/zhengxiaoyao0716/markplus -->", "class": "Comments" });
+                    Markplus.register(1, { "tag": "span", "html": "<span>markplus-plugin-render-catalog</span><br>", "class": "Header Header-1", "data-markplus-header-level": 1, "id": "markplusPluginRenderCatalog" });
+                    Markplus.register(2, { "tag": "span", "html": "<span>Catelog(Tabs of Content) support for [markplus](https://github.com/zhengxiaoyao0716/markplus).</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "catelogTabsOfContentSupportForMarkplusHttpsGithubComZhengxiaoyao0716Markplus" });
+                    Markplus.register(3, { "tag": "span", "html": "<br>", "class": "Plain" });
+                    Markplus.register(4, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
+                    Markplus.register(5, { "tag": "span", "html": "<span>Setup</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "setup" });
+                    Markplus.register(6, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs q\">npm i --<span class=\"hljs-built_in\">save</span>-<span class=\"hljs-built_in\">dev</span> markplus markplus-plugin-render-catalog</span>", "class": "Code Code-bash" });
+                    Markplus.register(9, { "tag": "span", "html": "<br>", "class": "Plain" });
+                    Markplus.register(10, { "tag": "span", "html": "<br>", "class": "Divider Divider-dashed" });
+                    Markplus.register(11, { "tag": "span", "html": "<span>Usage</span><br>", "class": "Header Header-2", "data-markplus-header-level": 2, "id": "usage" });
+                    Markplus.register(12, { "tag": "span", "html": "<span>Simple:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "simple" });
+                    Markplus.register(13, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{ <span class=\"hljs-attr\">\"plugin\"</span>: [ <span class=\"hljs-string\">\"render-catalog\"</span> ] }</span>", "class": "Code Code-json" });
+                    Markplus.register(16, { "tag": "span", "html": "<br>", "class": "Plain" });
+                    Markplus.register(17, { "tag": "span", "html": "<span>Default folded catalog:</span><br>", "class": "Header Header-3", "data-markplus-header-level": 3, "id": "defaultFoldedCatalog" });
+                    Markplus.register(18, { "tag": "pre", "html": "<span id=\"full\">◤</span><span class=\"hljs json\">{\n    <span class=\"hljs-attr\">\"plugin\"</span>: [\n        [<span class=\"hljs-string\">\"render-catalog\"</span>, <span class=\"hljs-literal\">true</span>]\n    ]\n}</span>", "class": "Code Code-json" });
+                    Markplus.register(25, { "tag": "span", "html": "<br>", "class": "Plain" });
+                }
+            }]);
+
+            return MarkplusPluginRenderCatalog;
+        }();
 
         exports.default = MarkplusPluginRenderCatalog;
     });
