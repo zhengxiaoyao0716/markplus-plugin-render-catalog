@@ -5,8 +5,8 @@ const head = `<style>
 
     .Markplus-catalog>a.fold {
         position: absolute;
-        top: 0;
         z-index: 1;
+        top: 0;
         right: 10px;
         margin-top: 10px;
         cursor: pointer;
@@ -67,6 +67,7 @@ const head = `<style>
 
     .Markplus-catalog>span.top {
         position: fixed;
+        z-index: 1;
         bottom: 0;
         width: 30vw;
         transition: top 0.5s, width 0.5s;
@@ -86,8 +87,9 @@ const head = `<style>
 
 const RenderCatalog = (self, fold, ) => ({
     head: () => head,
-    code: () => `(container => {
-        window.addEventListener('load', () => ((parent) => {
+    code: () => `(cache => Markplus.process.push(mpContainer => {
+        const container = document.createElement('div');
+        (parent => {
             if (window.innerWidth / window.innerHeight > 1) {
                 parent.style.display = 'flex';
             } else {
@@ -97,8 +99,8 @@ const RenderCatalog = (self, fold, ) => ({
                     .Markplus-catalog.fold>.Tabel { width: 100%; max-height: 0vh; }
                 \`;
             }
-            parent.insertBefore(container, Markplus.container);
-        })(Markplus.container.parentElement));
+            parent.insertBefore(container, mpContainer);
+        })(mpContainer.parentElement)
 
         container.classList.add('Markplus-catalog');
         container.appendChild((span => (span.innerHTML = '<!-- markplus-plugin-render-catalog -->', span))(document.createElement('span')));
@@ -116,9 +118,10 @@ const RenderCatalog = (self, fold, ) => ({
         container.appendChild(tabArea);
 
         const scrollTo = target => {
-            const styleTop = () => Math.min(target.offsetTop - target.offsetParent.offsetTop, container.clientHeight - tabArea.clientHeight);
-            target && target.offsetParent && [tabArea, foldButton].forEach(dom => dom.style.top = \`\${styleTop()}px\`);
+            const styleTop = () => Math.min(target.offsetTop - container.offsetTop, container.clientHeight - tabArea.clientHeight);
+            target && [tabArea, foldButton].forEach(dom => dom.style.top = \`\${styleTop()}px\`);
         }
+        cache.scrollToTop.push(() => scrollTo(mpContainer));
 
         const backTop = document.createElement('span');
         container.appendChild((button => {
@@ -126,9 +129,8 @@ const RenderCatalog = (self, fold, ) => ({
             button.classList.add('top');
             button.addEventListener('click', () => {
                 location.hash = location.hash ? '' : '#top';
-                scrollTo(Markplus.container);
+                cache.scrollToTop.forEach(scroll => scroll());
             });
-            ${fold ? 'container.classList.add(\'fold\');' : ''}
             return button;
         })(backTop));
 
@@ -138,7 +140,7 @@ const RenderCatalog = (self, fold, ) => ({
             const firstTab = container.querySelector('.Tabel span.tab');
             const hash = decodeURIComponent(hashAvailable() ? location.hash : firstTab && firstTab.getAttribute('to'));
             dynamicStyle.innerHTML = \`.Markplus-catalog>.Tabel span.tab[to="\${hash}"] { color: #fff; }\`;
-            hashAvailable() && scrollTo(Markplus.container.querySelector(\`.Header\${hash}\`) || Markplus.container.querySelector(hash) || document.querySelector(hash));
+            hashAvailable() && scrollTo(mpContainer.querySelector(\`.Header\${hash}\`) || mpContainer.querySelector(hash));
         }));
 
         const catalog = /** @param {HTMLElement} ele */ ele => {
@@ -155,9 +157,9 @@ const RenderCatalog = (self, fold, ) => ({
             tab.addEventListener('click', () => location.hash = ele.id);
             tabArea.appendChild(tab);
         };
-        Markplus.decorators.push(ele => ele.classList.contains('Header') && catalog(ele));
+        Markplus.decorators.push(ele => ele.classList.contains('Header') && Markplus.container == mpContainer && catalog(ele));
 
         return container;
-    })(document.createElement('div'));`.replace(/\n {4}/g, '\n'),
+    }))({ scrollToTop: [] });`.replace(/\n {4}/g, '\n'),
 });
 exports.default = RenderCatalog;
