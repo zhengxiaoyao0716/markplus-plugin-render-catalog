@@ -100,7 +100,7 @@ const RenderCatalog = (self, fold, ) => ({
                 \`;
             }
             parent.insertBefore(container, mpContainer);
-        })(mpContainer.parentElement)
+        })(mpContainer.parentElement);
 
         container.classList.add('Markplus-catalog');
         container.appendChild((span => (span.innerHTML = '<!-- markplus-plugin-render-catalog -->', span))(document.createElement('span')));
@@ -121,7 +121,7 @@ const RenderCatalog = (self, fold, ) => ({
             const offsetTop = (target, pt = 0) => target.offsetParent ? offsetTop(target.offsetParent, pt + target.offsetTop) : pt + target.offsetTop;
             const styleTop = () => Math.min(offsetTop(target) - offsetTop(container), container.clientHeight - tabArea.clientHeight);
             target && [tabArea, foldButton].forEach(dom => dom.style.top = \`\${styleTop()}px\`);
-        }
+        };
         cache.scrollToTop.push(() => scrollTo(mpContainer));
 
         const backTop = document.createElement('span');
