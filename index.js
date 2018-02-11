@@ -45,6 +45,7 @@ const head = `<style>
     }
     .Markplus-catalog>.Tabel span.tab-1 {
         word-break: break-word;
+        font-size: 1.1em;
     }
     .Markplus-catalog>.Tabel span.tab:not(:hover) {
         color: #9ff;
